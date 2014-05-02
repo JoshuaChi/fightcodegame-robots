@@ -1,7 +1,10 @@
 
 var Robot = function(robot) {
-	robot.turn(45);
+  robot.turn(45);
+  robot.rotateCannon(30);
   robot.ahead(10);
+  this.lastEnemyBearing = null;
+  this.clone = null;
 };
 
 
@@ -26,7 +29,9 @@ Robot.prototype.turn1 = function(robot, bearing) {
 Robot.prototype.onIdle = function(ev) {
   var robot;
   robot = ev.robot;
-  robot.turn(10);
+  if (this.lastEnemyBearing != null ) {
+    robot.rotateCannon(this.lastEnemyBearing);
+  }
   robot.ahead(0.5);
 };
 
@@ -41,6 +46,7 @@ Robot.prototype.onRobotCollision = function(ev) {
 Robot.prototype.onWallCollision = function(ev) {
   var robot = ev.robot;
   robot.turn(10);
+  //robot.rotateCannon(30);
   robot.ahead(10);
 };
 
@@ -52,24 +58,33 @@ Robot.prototype.onScannedRobot = function(ev) {
   if (robot.id == scannedRobot.parentId || robot.parentId == scannedRobot.id) {
     return;
   }
-  robot.clone();
+  this.lastEnemyBearing = scannedRobot.bearing;
+  this.clone = robot.clone();
+
   if ((scannedRobot.parentId == null && robot.parentId == null) || (scannedRobot.parentId == null && robot.parentId && robot.parentId != scannedRobot.id)) {
+    robot.ahead(8);
+    for(var i = 0; i < 100; i++) {
+      robot.fire();
+    }
+    robot.back(8);
+    for(var i = 0; i < 100; i++) {
+      robot.fire();
+    }
+    robot.ahead(8);
     for(var i = 0; i < 100; i++) {
       robot.fire();
     }
   }
   //robot.turn(scannedRobot.bearing);
-  robot.ahead(30);
+  //robot.ahead(30);
 };
 
 // ohhh... we were hit by another robot...
 Robot.prototype.onHitByBullet = function(ev) {
-  if(ev.robot.availableClones == 1) {
-    ev.robot.clone();
-  }
+  this.clone = ev.robot.clone();
   var robot;
   robot = ev.robot;
-  this.turn1(robot, ev.bearing);
-  robot.ahead(120);
+  this.lastEnemyBearing = ev.bearing;
+  robot.ahead(20);
   robot.disappear();
 };
