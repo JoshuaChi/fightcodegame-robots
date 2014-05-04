@@ -1,7 +1,7 @@
 
 var Robot = function(robot) {
   robot.turn(45);
-  robot.rotateCannon(30);
+  robot.rotateCannon(45);
   robot.ahead(10);
   this.lastEnemyBearing = null;
   this.clone = null;
@@ -62,21 +62,12 @@ Robot.prototype.onScannedRobot = function(ev) {
   this.clone = robot.clone();
 
   if ((scannedRobot.parentId == null && robot.parentId == null) || (scannedRobot.parentId == null && robot.parentId && robot.parentId != scannedRobot.id)) {
-    robot.ahead(8);
-    for(var i = 0; i < 100; i++) {
-      robot.fire();
-    }
-    robot.back(8);
-    for(var i = 0; i < 100; i++) {
-      robot.fire();
-    }
-    robot.ahead(8);
-    for(var i = 0; i < 100; i++) {
+    for(var i = 0; i < 300; i++) {
       robot.fire();
     }
   }
   //robot.turn(scannedRobot.bearing);
-  //robot.ahead(30);
+  robot.ahead(30);
 };
 
 // ohhh... we were hit by another robot...
